@@ -7,6 +7,7 @@ Item {
 
     property string cardId: ""
     property var layout: null
+    property var board: null
     property bool dragAnywhere: false
     property real dragBarHeight: 46
     property real defaultX: 0
@@ -54,12 +55,17 @@ Item {
         }
 
         onReleased: {
-            if (root.layout)
+            // The board resolves overlaps and persists every position at once.
+            if (root.board)
+                root.board.resolve(root.cardId);
+            else if (root.layout)
                 root.layout.place(root.cardId, root.posX, root.posY);
         }
     }
 
     Component.onCompleted: {
+        if (root.board)
+            root.board.register(root);
         if (!root.layout)
             return;
         const saved = root.layout.position(root.cardId, root.defaultX, root.defaultY);

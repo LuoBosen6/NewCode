@@ -24,6 +24,12 @@ ShellRoot {
         id: layout
     }
 
+    CardBoard {
+        id: board
+
+        layout: layout
+    }
+
     readonly property string iconDir: Qt.resolvedUrl("assets/weather").toString()
 
     Variants {
@@ -79,6 +85,7 @@ ShellRoot {
 
                     cardId: "clock"
                     layout: layout
+                    board: board
                     dragAnywhere: true
                     width: 440
                     height: 190
@@ -95,6 +102,7 @@ ShellRoot {
 
                     cardId: "now"
                     layout: layout
+                    board: board
                     dragAnywhere: true
                     width: 320
                     height: 160
@@ -113,6 +121,7 @@ ShellRoot {
 
                     cardId: "daily"
                     layout: layout
+                    board: board
                     dragBarHeight: 44
                     width: 430
                     height: 180
@@ -131,6 +140,7 @@ ShellRoot {
 
                     cardId: "hourly"
                     layout: layout
+                    board: board
                     dragBarHeight: 44
                     width: 470
                     height: 300
