@@ -60,8 +60,8 @@ ShellRoot {
                 ClockCard {
                     id: clockCard
 
-                    width: 300
-                    height: 130
+                    width: 400
+                    height: 190
                     anchors.right: parent.right
                     anchors.top: parent.top
                     anchors.rightMargin: 40
