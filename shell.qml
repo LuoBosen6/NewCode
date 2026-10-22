@@ -7,7 +7,8 @@ import "services"
 
 // A minimal, self-contained desktop card set: clock, current weather, daily
 // forecast and hourly forecast. Drawn on a full-screen Bottom layer surface so
-// it sits behind normal windows, with input enabled only where it is needed.
+// it sits behind normal windows; cards are draggable by their header strip and
+// their positions persist in layout.json.
 ShellRoot {
     id: shell
 
@@ -17,6 +18,10 @@ ShellRoot {
         latitude: 38.94755
         longitude: 118.55078
         locationName: "曹妃甸"
+    }
+
+    Layout {
+        id: layout
     }
 
     readonly property string iconDir: Qt.resolvedUrl("assets/weather").toString()
@@ -44,67 +49,99 @@ ShellRoot {
                 bottom: true
             }
 
-            // Only the hourly card needs pointer input (horizontal scrolling);
-            // everything else lets clicks fall through to the desktop.
+            // Cards need pointer input for dragging (and the hourly card for
+            // horizontal scrolling); everything else falls through.
             mask: Region {
                 Region {
-                    item: hourlyCard
+                    item: clockWrap
+                }
+
+                Region {
+                    item: nowWrap
+                }
+
+                Region {
+                    item: dailyWrap
+                }
+
+                Region {
+                    item: hourlyWrap
                 }
             }
 
             Item {
-                id: layout
+                id: layoutRoot
 
                 anchors.fill: parent
 
-                ClockCard {
-                    id: clockCard
+                DraggableCard {
+                    id: clockWrap
 
-                    width: 400
+                    cardId: "clock"
+                    layout: layout
+                    dragAnywhere: true
+                    width: 440
                     height: 190
-                    anchors.right: parent.right
-                    anchors.top: parent.top
-                    anchors.rightMargin: 40
-                    anchors.topMargin: 30
+                    defaultX: layoutRoot.width - width - 40
+                    defaultY: 30
+
+                    ClockCard {
+                        anchors.fill: parent
+                    }
                 }
 
-                WeatherNowCard {
-                    id: nowCard
+                DraggableCard {
+                    id: nowWrap
 
-                    width: 300
-                    height: 150
-                    weather: weatherService
-                    iconDir: shell.iconDir
-                    anchors.right: parent.right
-                    anchors.bottom: parent.bottom
-                    anchors.rightMargin: 40
-                    anchors.bottomMargin: 40
+                    cardId: "now"
+                    layout: layout
+                    dragAnywhere: true
+                    width: 320
+                    height: 160
+                    defaultX: layoutRoot.width - width - 40
+                    defaultY: layoutRoot.height - height - 40
+
+                    WeatherNowCard {
+                        anchors.fill: parent
+                        weather: weatherService
+                        iconDir: shell.iconDir
+                    }
                 }
 
-                DailyForecastCard {
-                    id: dailyCard
+                DraggableCard {
+                    id: dailyWrap
 
+                    cardId: "daily"
+                    layout: layout
+                    dragBarHeight: 44
                     width: 430
                     height: 180
-                    weather: weatherService
-                    iconDir: shell.iconDir
-                    anchors.left: parent.left
-                    anchors.bottom: hourlyCard.top
-                    anchors.leftMargin: 40
-                    anchors.bottomMargin: 20
+                    defaultX: 40
+                    defaultY: layoutRoot.height - height - 40 - hourlyWrap.height - 20
+
+                    DailyForecastCard {
+                        anchors.fill: parent
+                        weather: weatherService
+                        iconDir: shell.iconDir
+                    }
                 }
 
-                HourlyForecastCard {
-                    id: hourlyCard
+                DraggableCard {
+                    id: hourlyWrap
 
+                    cardId: "hourly"
+                    layout: layout
+                    dragBarHeight: 44
                     width: 470
                     height: 300
-                    weather: weatherService
-                    iconDir: shell.iconDir
-                    anchors.left: parent.left
-                    anchors.bottom: parent.bottom
-                    anchors.leftMargin: 40
-                    anchors.bottomMargin: 40
+                    defaultX: 40
+                    defaultY: layoutRoot.height - height - 40
+
+                    HourlyForecastCard {
+                        anchors.fill: parent
+                        weather: weatherService
+                        iconDir: shell.iconDir
+                    }
                 }
             }
         }
